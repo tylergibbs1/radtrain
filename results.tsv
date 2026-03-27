@@ -1,0 +1,46 @@
+commit	val_bpb	memory_gb	status	description
+45e564e	0.979600	63.9	keep	F0: clean baseline (no radiation)
+68798ff	0.979845	63.9	keep	F1: 1x LEO rate (~4 flips/5min) - barely measurable impact +0.000245
+5a1819d	0.000000	0.0	crash	F2: 100x LEO (~416 flips/5min) - NaN at step 66
+1d516ec	0.000000	0.0	crash	F3: 10x LEO (~42 flips/5min) - NaN at step 167 (~6 flips)
+6beffd8	2.109965	63.9	keep	F4: 100x LEO with NaN repair + clamp ±1.0 - SURVIVED (degraded)
+46deab8	0.000000	0.0	crash	F5: 1000x LEO (~4159 flips/5min) with NaN repair - crashed step 17
+8bfa831	1.008871	63.9	keep	F6: 10x LEO with NaN repair - SURVIVED (was crash without defense)
+b9f6b87	0.000000	0.0	crash	F7: 50x LEO with NaN repair - crashed step 792/1100 (72% through)
+b8f44b2	1.410560	63.9	keep	F8: 50x LEO with NaN repair + checkpoint rollback - survived val 1.41
+83ebee7	0.000000	0.0	crash	F9: 200x LEO full defense - crashed step 25 (no checkpoint saved yet)
+2e29ad7	1.011322	63.9	keep	F10: FAT 5flips/step + 10x LEO test - 5472 total flips val 1.011
+aec598f	1.011540	63.9	keep	F11: FAT 5flips/step + 100x LEO - MASSIVE improvement vs F4 (2.11->1.01)
+7ddfb34	1.010987	63.9	keep	F12: FAT 5flips/step NO test radiation - clean FAT cost is +0.031 bpb
+af6c6dd	1.011976	63.9	keep	F13: FAT + 1000x LEO - SURVIVED\! (was crash without FAT) val 1.012
+61c6a73	1.011611	63.9	keep	F14: FAT + 10000x LEO - STILL SURVIVING val 1.012
+61ebe11	1.010909	63.9	keep	F15: FAT 1flip/step + 100x LEO - slightly better than 5flips\!
+ab9b5b9	1.010989	63.9	keep	F16: FAT 1flip/step clean - same cost as 5flips (1.011)
+987a6d6	1.204460	63.9	keep	F17: exponent-only 10x NO defense - survived but degraded (1.20)
+332a140	0.979671	63.9	keep	F18: mantissa-only 100x NO defense - ZERO degradation (434 flips)
+b4f96b8	0.979668	63.9	keep	F19: sign-only 100x NO defense - ZERO degradation (434 sign flips)
+5a2f0c0	0.000000	0.0	crash	F20: exponent-only 100x rollback loop (checkpoint already corrupted)
+6cf1bcf	0.000000	0.0	crash	F21: AdamW-only 10x LEO NaN repair - rollback loop at step 1101 (loss was 3.51)
+d21ae04	1.008524	63.9	keep	F22: AdamW-only 10x LEO NaN repair - val 1.009 (similar to Muon)
+498c716	0.979723	63.9	keep	F23: AdamW-only clean baseline val 0.9797
+cecd0b7	1.091871	63.9	keep	F24: depth=4 (19.7M) 10x LEO NaN repair - val 1.092
+47f78d8	1.063128	63.9	keep	F25: depth=4 (19.7M) clean baseline val 1.063
+ac3e4a2	1.011865	63.9	keep	F26: exponent-only FAT 1/step + 100x - same resilience as uniform FAT
+2265b91	1.012170	63.9	keep	F27: exponent-only FAT clean cost 1.012 (slightly higher than uniform)
+b488690	1.022411	63.9	keep	F28: 10x seed=123 NaN repair val 1.022 (variance run 2)
+ca3c780	1.102349	63.9	keep	F29: 10x seed=7 NaN repair val 1.102 (variance run 3 - worst)
+f9cf5e5	1.008541	63.9	keep	F30: FAT 1/step seed=7 10x - val 1.009 (no-FAT was 1.102\!)
+da8a933	1.011366	63.9	keep	F31: mantissa-only FAT 5/step + 100x uniform - same resilience as uniform FAT\!
+24899e8	1.011100	63.9	keep	F32: mantissa-only FAT clean cost 1.011 (same as uniform - noise type irrelevant)
+1903ea2	0.000000	0.0	crash	F33: Gaussian FAT sigma=0.01 - rollback loop (sigma too high)
+6b16f5f	0.000000	0.0	crash	F34: Gaussian FAT sigma=0.001 at 100x - rollback loop (Gaussian \!= bit-flip\!)
+2052d81	0.000000	0.0	crash	F35: Gaussian FAT clean - OOM (randn_like too large for all params)
+9390a15	0.000000	0.0	crash	F36: no softcap 10x LEO - CRASH (softcap IS a radiation defense\!)
+fb54332	0.986777	63.9	keep	F37: half-LR clean baseline val 0.987 (need worse to match FAT)
+888b8b4	0.997801	63.9	keep	F38: quarter-LR clean baseline val 0.998
+ff9a4a1	0.982906	63.9	keep	F39: depth=6 clean baseline val 0.983
+65c6ad7	0.000000	0.0	crash	F40: FAT 1/step 10x NO NaN repair - CRASH step 39 (both needed)
+ba0be71	1.015419	63.9	keep	F41: eclipse (5 resets) + FAT + 10x LEO - only +0.004 from eclipses\!
+16e8cef	1.011249	63.9	keep	F42: eclipse (5 resets) + 10x NO FAT - eclipse cost only +0.002
+56b5749	1.011832	63.9	keep	F43: progressive TID (1x->10x) + FAT - handled perfectly val 1.012
+2f5c76e	1.015889	63.9	keep	F44: FULL SPACE SIM (eclipse+TID+FAT+NaN) survived\! val 1.016 (+3.7%)

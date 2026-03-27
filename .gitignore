@@ -1,0 +1,11 @@
+# Large model files (use Git LFS or GitHub Releases)
+saved_models/*.pt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Training artifacts
+run.log
+*.log
