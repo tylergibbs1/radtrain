@@ -2,7 +2,7 @@
 
 **Radiation-resilient neural network training for space-based GPUs.**
 
-The first systematic study of how space radiation (bit flips from Single Event Upsets) affects transformer pretraining, and software-only defenses that make training survivable in orbit.
+The first systematic study of how space radiation (bit flips from Single Event Upsets) affects transformer pretraining, and software-only defenses that make training survivable in orbit. Read the full write-up in [`paper.md`](paper.md).
 
 ## Key Finding
 
@@ -17,15 +17,21 @@ Clean            0.980         1.011 (+3.2%)
 10,000x LEO      —             1.012
 ```
 
-## What's in this repo
+## Use the bit-flip injector
 
+[`inject.py`](inject.py) is portable and works with any PyTorch model (bf16/fp16/fp32 weights), at rates calibrated to measured LEO radiation:
+
+```python
+from inject import inject_bitflips, compute_flip_rate
+
+rate = compute_flip_rate(model, multiplier=10)  # 10x LEO rate
+print(f"Expected flips per step: {rate['flips_per_step']:.4f}")
+
+# inside the training loop, after optimizer.step():
+inject_bitflips(model, num_flips=1)
 ```
-paper.md              — Full paper with 45 experiments and analysis
-train.py              — Modified autoresearch training script with radiation simulation
-inject.py             — Bit-flip injection framework (portable, works with any PyTorch model)
-saved_models/         — 3 reference checkpoints (clean, FAT-trained, full space sim)
-results.tsv           — Complete experimental results (45 experiments)
-```
+
+It also provides `repair_all_nan(model)` (zero out NaN/Inf weights) and `weight_clamp(model, max_val)` as defenses.
 
 ## The Problem
 
@@ -59,9 +65,20 @@ Inject 1 random bit flip per training step. The optimizer learns to find flat mi
 | Full space sim | FAT + eclipse + progressive TID = 3.7% total cost |
 | Noise type matters | Sparse bit flips work; dense Gaussian noise doesn't |
 
+## What's in this repo
+
+```
+paper.md              — Full paper with 45 experiments and analysis
+train.py              — Modified autoresearch training script with radiation simulation
+inject.py             — Bit-flip injection framework (portable, works with any PyTorch model)
+results.tsv           — Complete experimental results (45 experiments)
+```
+
 ## Reproducing
 
-Requires a single NVIDIA GPU (tested on H100 80GB). Based on [karpathy/autoresearch](https://github.com/karpathy/autoresearch).
+Requires a single NVIDIA GPU (tested on H100 80GB). Based on [karpathy/autoresearch](https://github.com/karpathy/autoresearch): this repo holds only the modified `train.py` and `inject.py`, so copy them into an autoresearch checkout, which provides `prepare.py` and the `uv` project.
+
+Radiation settings are constants near the top of `train.py`: `RADIATION_MULTIPLIER` (0 = off, 1 = realistic LEO), `FAT_TRAINING_FLIPS`, and `ECLIPSE_CYCLE_STEPS`. The committed defaults are 100x LEO with FAT on.
 
 ```bash
 # Install
@@ -70,7 +87,7 @@ uv sync
 # Prepare data (one-time)
 uv run prepare.py
 
-# Clean baseline
+# Clean baseline (edit train.py: RADIATION_MULTIPLIER=0, FAT_TRAINING_FLIPS=0)
 SAVE_NAME=clean.pt uv run train.py
 
 # FAT training (edit train.py: FAT_TRAINING_FLIPS=1)
@@ -81,6 +98,8 @@ SAVE_NAME=space.pt uv run train.py
 ```
 
 ## Saved Models
+
+Reference checkpoints from the paper. They are not committed to this repo (each is ~301 MB).
 
 | Model | val_bpb | Conditions | Size |
 |-------|---------|------------|------|
@@ -94,7 +113,7 @@ SAVE_NAME=space.pt uv run train.py
 @misc{radtrain2026,
   title={Fault-Aware Pretraining: Training Language Models Under Simulated Space Radiation},
   year={2026},
-  url={https://github.com/tylergibbs/radtrain}
+  url={https://github.com/tylergibbs1/radtrain}
 }
 ```
 
