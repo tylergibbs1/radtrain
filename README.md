@@ -22,13 +22,15 @@ Clean            0.980         1.011 (+3.2%)
 [`inject.py`](inject.py) is portable and works with any PyTorch model (bf16/fp16/fp32 weights), at rates calibrated to measured LEO radiation:
 
 ```python
+import random
 from inject import inject_bitflips, compute_flip_rate
 
 rate = compute_flip_rate(model, multiplier=10)  # 10x LEO rate
-print(f"Expected flips per step: {rate['flips_per_step']:.4f}")
+print(f"Expected flips per day: {rate['flips_per_day']:.1f}")
 
 # inside the training loop, after optimizer.step():
-inject_bitflips(model, num_flips=1)
+if random.random() < rate["flip_prob_per_step"]:
+    inject_bitflips(model, num_flips=1)
 ```
 
 It also provides `repair_all_nan(model)` (zero out NaN/Inf weights) and `weight_clamp(model, max_val)` as defenses.
